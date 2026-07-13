@@ -1,7 +1,3 @@
-/* =========================================================
-   Photo Print Studio — Stylesheet
-   ========================================================= */
-
 :root {
   --color-bg: #f3f4f6;
   --color-surface: #ffffff;
@@ -36,6 +32,7 @@
 html, body {
   height: 100%;
   margin: 0;
+  overscroll-behavior-y: none; 
 }
 
 body {
@@ -49,7 +46,6 @@ button, input {
   font-family: inherit;
 }
 
-/* ============ ACCESSIBILITY: KEYBOARD FOCUS ============ */
 
 .tool-btn:focus-visible,
 .app-header__status:focus-visible,
@@ -73,10 +69,10 @@ input[type="range"]:focus-visible {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh; 
   overflow: hidden;
 }
 
-/* ============ HEADER ============ */
 
 .app-header {
   height: var(--header-height);
@@ -112,15 +108,12 @@ input[type="range"]:focus-visible {
   border: 1px solid var(--color-border);
 }
 
-/* ============ BODY LAYOUT ============ */
 
 .app-body {
   flex: 1;
   display: flex;
   min-height: 0;
 }
-
-/* ============ LEFT TOOLBAR ============ */
 
 .toolbar {
   width: var(--toolbar-width);
@@ -230,8 +223,6 @@ input[type="range"]:focus-visible {
   display: none !important;
 }
 
-/* ============ CENTER WORKSPACE ============ */
-
 .workspace {
   flex: 1;
   min-width: 0;
@@ -246,15 +237,6 @@ input[type="range"]:focus-visible {
   --paper-scale: 1;
 }
 
-/*
- * The wrapper's box is sized to the VISUALLY scaled dimensions (so
- * it takes up the correct amount of space in the flex layout and
- * centers correctly), while the .a4-paper element inside it keeps
- * its true 794x1123 pixel size and is scaled down purely with a CSS
- * transform. This means the Fabric.js canvas is never resized or
- * reinitialized for responsiveness — it always renders at full,
- * crisp resolution; only its on-screen presentation shrinks.
- */
 .a4-paper-wrapper {
   width: calc(794px * var(--paper-scale));
   height: calc(1123px * var(--paper-scale));
@@ -299,8 +281,6 @@ input[type="range"]:focus-visible {
 .a4-placeholder.hidden {
   display: none;
 }
-
-/* ============ RIGHT SIDEBAR ============ */
 
 .sidebar {
   width: var(--sidebar-width);
@@ -383,9 +363,9 @@ input[type="range"]:focus-visible {
   cursor: not-allowed;
 }
 
-/* Range sliders */
 .field input[type="range"] {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   height: 4px;
   border-radius: 999px;
@@ -430,7 +410,6 @@ input[type="range"]:focus-visible {
   box-shadow: 0 0 0 1px #c3c7d1;
 }
 
-/* Toggle switch */
 .field--toggle {
   display: flex;
   align-items: center;
@@ -491,8 +470,6 @@ input[type="range"]:focus-visible {
   cursor: not-allowed;
 }
 
-/* ============ RESPONSIVE ============ */
-
 @media (max-width: 1200px) {
   :root {
     --sidebar-width: 250px;
@@ -508,32 +485,6 @@ input[type="range"]:focus-visible {
     overflow-y: auto;
   }
 
-  .toolbar {
-    width: 100%;
-    min-width: 0;
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 10px;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .tool-divider {
-    width: 1px;
-    height: auto;
-    margin: 0 4px;
-  }
-
-  .tool-btn {
-    flex-direction: row;
-    padding: 8px 12px;
-    white-space: nowrap;
-  }
-
-  .tool-spacer {
-    display: none;
-  }
-
   .sidebar {
     width: 100%;
     min-width: 0;
@@ -541,35 +492,117 @@ input[type="range"]:focus-visible {
     border-top: 1px solid var(--color-border);
     flex-direction: row;
     flex-wrap: wrap;
+    padding: 20px;
   }
 
   .panel {
     flex: 1 1 260px;
   }
+}
+
+@media (max-width: 768px) {
+  .app-body {
+
+    display: block; 
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-bottom: 90px; 
+  }
+
+
+  .toolbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    background: var(--color-surface);
+    border-right: none;
+    border-top: 1px solid var(--color-border);
+    border-bottom: none;
+    z-index: 100;
+    padding: 10px 12px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+
+    scrollbar-width: none;
+  }
+  
+  .toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tool-btn {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    min-height: 48px;
+  }
+
+  .tool-divider {
+    width: 1px;
+    height: 30px;
+    margin: auto 8px;
+    flex-shrink: 0;
+  }
+
+  .tool-spacer {
+    display: none;
+  }
 
   .workspace {
     padding: 24px 16px;
-    --paper-scale: 0.6;
+    flex: none;
+    display: flex;
+    justify-content: center;
+
+    --paper-scale: calc((100vw - 32px) / 794);
+
+    min-height: calc(1123px * var(--paper-scale) + 48px);
+  }
+
+  .sidebar {
+    padding: 16px;
+    gap: 16px;
+    flex: none;
+  }
+
+  .panel {
+    flex: none;
+    width: 100%;
+  }
+
+  .field input[type="number"] {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+  
+  .field input[type="range"]::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .field input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+  }
+
+  .field label {
+    font-size: 14px;
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 480px) {
   .app-header__brand span {
     display: none;
   }
-  .workspace {
-    padding: 16px 10px;
-    --paper-scale: 0.42;
+  .app-header {
+    padding: 0 16px;
   }
 }
-
-@media (max-width: 380px) {
-  .workspace {
-    --paper-scale: 0.32;
-  }
-}
-
-/* ============ PRINT LAYER ============ */
 
 .print-area {
   display: none;

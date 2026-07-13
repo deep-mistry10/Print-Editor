@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Photo Print Studio</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app">
 
-    <!-- ============ HEADER ============ -->
     <header class="app-header">
       <div class="app-header__brand">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -24,7 +23,6 @@
 
     <div class="app-body">
 
-      <!-- ============ LEFT TOOLBAR ============ -->
       <aside class="toolbar" id="toolbar">
         <button class="tool-btn tool-btn--primary" id="btnOpenImage" title="Open Image">
           <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -79,7 +77,6 @@
         </button>
       </aside>
 
-      <!-- ============ CENTER WORKSPACE ============ -->
       <main class="workspace" id="workspace">
         <div class="a4-paper-wrapper" id="a4PaperWrapper">
           <div class="a4-paper" id="a4Paper">
@@ -92,7 +89,6 @@
         </div>
       </main>
 
-      <!-- ============ RIGHT SIDEBAR ============ -->
       <aside class="sidebar" id="sidebar">
 
         <section class="panel">
@@ -159,15 +155,12 @@
     </div>
   </div>
 
-  <!-- ============ PRINT LAYER (hidden on screen, shown only when printing) ============ -->
   <div class="print-area" id="printArea">
     <img id="printImage" alt="Print output" />
   </div>
 
-  <!-- Fabric.js library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
 
-  <!-- App modules -->
   <script src="js/canvas.js"></script>
   <script src="js/editor.js"></script>
   <script src="js/crop.js"></script>
