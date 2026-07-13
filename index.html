@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo Print Studio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- ============ HEADER ============ -->
+    <header class="app-header">
+      <div class="app-header__brand">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/>
+          <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+          <path d="M21 15l-5-5-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Photo Print Studio</span>
+      </div>
+      <div class="app-header__status" id="statusText" role="status" aria-live="polite">No image loaded</div>
+    </header>
+
+    <div class="app-body">
+
+      <!-- ============ LEFT TOOLBAR ============ -->
+      <aside class="toolbar" id="toolbar">
+        <button class="tool-btn tool-btn--primary" id="btnOpenImage" title="Open Image">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Open Image</span>
+        </button>
+        <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" hidden />
+
+        <div class="tool-divider"></div>
+
+        <button class="tool-btn" id="btnCrop" disabled title="Crop">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 2v14a2 2 0 002 2h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 22V8a2 2 0 00-2-2H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Crop</span>
+        </button>
+
+        <button class="tool-btn tool-btn--success hidden" id="btnApplyCrop" title="Apply Crop">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Apply</span>
+        </button>
+
+        <button class="tool-btn tool-btn--danger hidden" id="btnCancelCrop" title="Cancel Crop">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Cancel</span>
+        </button>
+
+        <button class="tool-btn" id="btnRotate" disabled title="Rotate 90°">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 11-3.2-6.9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M21 3v6h-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Rotate</span>
+        </button>
+
+        <button class="tool-btn" id="btnFlipH" disabled title="Flip Horizontal">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M17 6l3 2-3 2M7 6l-3 2 3 2M17 16l3 2-3 2M7 16l-3 2 3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Flip H</span>
+        </button>
+
+        <button class="tool-btn" id="btnFlipV" disabled title="Flip Vertical">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 12h18M6 7l2-3 2 3M6 17l2 3 2-3M16 7l2-3 2 3M16 17l2 3 2-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Flip V</span>
+        </button>
+
+        <div class="tool-divider"></div>
+
+        <button class="tool-btn" id="btnReset" disabled title="Reset All Edits">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 3v5h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Reset</span>
+        </button>
+
+        <div class="tool-spacer"></div>
+
+        <button class="tool-btn tool-btn--print" id="btnPrint" disabled title="Print">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 9V2h12v7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><rect x="6" y="14" width="12" height="8" stroke="currentColor" stroke-width="1.7"/><path d="M2 9h20a1 1 0 011 1v6a1 1 0 01-1 1h-3M2 9a1 1 0 00-1 1v6a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <span>Print</span>
+        </button>
+      </aside>
+
+      <!-- ============ CENTER WORKSPACE ============ -->
+      <main class="workspace" id="workspace">
+        <div class="a4-paper-wrapper" id="a4PaperWrapper">
+          <div class="a4-paper" id="a4Paper">
+            <canvas id="printCanvas" aria-label="Photo editing canvas — the A4 print area"></canvas>
+            <div class="a4-placeholder" id="a4Placeholder">
+              <svg viewBox="0 0 24 24" fill="none" width="46" height="46"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5-9 9" stroke="currentColor" stroke-width="1.3"/></svg>
+              <p>Upload an image to begin</p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- ============ RIGHT SIDEBAR ============ -->
+      <aside class="sidebar" id="sidebar">
+
+        <section class="panel">
+          <h3 class="panel__title">Transform</h3>
+
+          <div class="field">
+            <label for="inputWidth">Width <span class="unit">px</span></label>
+            <input type="number" id="inputWidth" min="1" disabled />
+          </div>
+
+          <div class="field">
+            <label for="inputHeight">Height <span class="unit">px</span></label>
+            <input type="number" id="inputHeight" min="1" disabled />
+          </div>
+
+          <div class="field field--slider">
+            <label for="inputRotation">Rotation <span class="value" id="valRotation">0°</span></label>
+            <input type="range" id="inputRotation" min="0" max="360" value="0" disabled />
+          </div>
+
+          <div class="field field--slider">
+            <label for="inputScale">Scale <span class="value" id="valScale">100%</span></label>
+            <input type="range" id="inputScale" min="5" max="300" value="100" disabled />
+          </div>
+        </section>
+
+        <section class="panel">
+          <h3 class="panel__title">Adjustments</h3>
+
+          <div class="field field--slider">
+            <label for="inputBrightness">Brightness <span class="value" id="valBrightness">0</span></label>
+            <input type="range" id="inputBrightness" min="-100" max="100" value="0" disabled />
+          </div>
+
+          <div class="field field--slider">
+            <label for="inputContrast">Contrast <span class="value" id="valContrast">0</span></label>
+            <input type="range" id="inputContrast" min="-100" max="100" value="0" disabled />
+          </div>
+
+          <div class="field field--slider">
+            <label for="inputSaturation">Saturation <span class="value" id="valSaturation">0</span></label>
+            <input type="range" id="inputSaturation" min="-100" max="100" value="0" disabled />
+          </div>
+
+          <div class="field field--slider">
+            <label for="inputOpacity">Opacity <span class="value" id="valOpacity">100%</span></label>
+            <input type="range" id="inputOpacity" min="0" max="100" value="100" disabled />
+          </div>
+        </section>
+
+        <section class="panel">
+          <h3 class="panel__title">Effects</h3>
+          <div class="field field--toggle">
+            <label for="inputGrayscale">Black &amp; White</label>
+            <label class="switch">
+              <input type="checkbox" id="inputGrayscale" disabled />
+              <span class="switch__track"></span>
+            </label>
+          </div>
+        </section>
+
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- ============ PRINT LAYER (hidden on screen, shown only when printing) ============ -->
+  <div class="print-area" id="printArea">
+    <img id="printImage" alt="Print output" />
+  </div>
+
+  <!-- Fabric.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+
+  <!-- App modules -->
+  <script src="js/canvas.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/crop.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/print.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
