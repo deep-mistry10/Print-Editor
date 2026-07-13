@@ -3,23 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Photo Print Studio</title>
+  <title>QIFY-Photo Print Studio</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app">
 
     <header class="app-header">
-      <div class="app-header__brand">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/>
-          <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
-          <path d="M21 15l-5-5-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span>Photo Print Studio</span>
-      </div>
-      <div class="app-header__status" id="statusText" role="status" aria-live="polite">No image loaded</div>
-    </header>
+  <div class="app-header__brand">
+    <!-- Added the class "brand-logo" here -->
+    <img src="/image/qify.png" alt="QIFY Logo" class="brand-logo" />
+    <span>QIFY-Photo Print Studio</span>
+  </div>
+  <div class="app-header__status" id="statusText" role="status" aria-live="polite">No image loaded</div>
+</header>
 
     <div class="app-body">
 
@@ -94,16 +91,6 @@
         <section class="panel">
           <h3 class="panel__title">Transform</h3>
 
-          <div class="field">
-            <label for="inputWidth">Width <span class="unit">px</span></label>
-            <input type="number" id="inputWidth" min="1" disabled />
-          </div>
-
-          <div class="field">
-            <label for="inputHeight">Height <span class="unit">px</span></label>
-            <input type="number" id="inputHeight" min="1" disabled />
-          </div>
-
           <div class="field field--slider">
             <label for="inputRotation">Rotation <span class="value" id="valRotation">0°</span></label>
             <input type="range" id="inputRotation" min="0" max="360" value="0" disabled />
@@ -140,7 +127,7 @@
         </section>
 
         <section class="panel">
-          <h3 class="panel__title">Effects</h3>
+          <h3 class="panel__title">Printout Type</h3>
           <div class="field field--toggle">
             <label for="inputGrayscale">Black &amp; White</label>
             <label class="switch">

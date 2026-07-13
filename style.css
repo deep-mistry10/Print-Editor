@@ -645,3 +645,12 @@ input[type="range"]:focus-visible {
     margin: 0;
   }
 }
+
+.brand-logo {
+  width: 30px; 
+  height: 30px;
+  padding: 2px; 
+  border: 2px solid var(--color-border-strong); 
+  border-radius: var(--radius-sm); 
+  object-fit: contain; 
+}
