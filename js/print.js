@@ -70,20 +70,20 @@ App.Print = (function () {
       canvas.requestRenderAll();
     }
 
-    printImageEl.src = dataUrl;
+    printImageEl.onload = () => {
+  // Give Android Chrome a moment to finish decoding
+  setTimeout(() => {
+    window.print();
+  }, 200);
+};
 
-    const triggerPrint = () => {
-      window.print();
-    };
+printImageEl.onerror = () => {
+  console.error("Failed to load print image.");
+  setStatus("Failed to prepare print image.", true);
+};
 
-    // Large data URLs can take a beat to decode; waiting for the
-    // image's load event avoids a blank first print attempt in some
-    // browsers.
-    if (printImageEl.complete && printImageEl.src === dataUrl) {
-      triggerPrint();
-    } else {
-      printImageEl.onload = triggerPrint;
-    }
+printImageEl.removeAttribute("src");
+printImageEl.src = dataUrl;
   }
 
   /**
@@ -105,7 +105,9 @@ App.Print = (function () {
     // Release the (potentially large, ~2480x3508px) data URL from
     // memory once the print dialog has closed.
     if (printImageEl) {
-      printImageEl.removeAttribute('src');
+      printImageEl.onload = null;
+printImageEl.onerror = null;
+printImageEl.removeAttribute("src");
     }
   }
 
