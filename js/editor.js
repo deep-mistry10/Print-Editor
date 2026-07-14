@@ -1,209 +1,87 @@
-/* =========================================================
-   editor.js
-   Owns the "single active image" reference and keeps the
-   Transform panel (Width, Height, Rotation, Scale) in sync
-   with the Fabric object — in both directions.
+window.activeImage = null;
+window.originalFile = null;
 
-   Crop, filter and print logic live in their own dedicated
-   modules (crop.js, filters.js, print.js) and are wired up
-   in later phases.
-   ========================================================= */
+// Handle file selection from input
+window.handleImageUpload = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-window.App = window.App || {};
-
-App.Editor = (function () {
-
-  let canvas = null;
-  let activeImage = null;
-  let originalState = null; // stores pristine values for Reset
-
-  // DOM refs (Transform panel)
-  let elRotation, elScale, elValRotation, elValScale;
-
-  function init(fabricCanvas) {
-    canvas = fabricCanvas;
-
-    elRotation = document.getElementById('inputRotation');
-    elScale = document.getElementById('inputScale');
-    elValRotation = document.getElementById('valRotation');
-    elValScale = document.getElementById('valScale');
-
-    bindCanvasEvents();
-    bindPanelEvents();
-  }
-
-  function bindCanvasEvents() {
-    canvas.on('object:scaling', updatePanelFromObject);
-    canvas.on('object:moving', updatePanelFromObject);
-    canvas.on('object:rotating', updatePanelFromObject);
-    canvas.on('object:modified', updatePanelFromObject);
-    canvas.on('selection:created', updatePanelFromObject);
-    canvas.on('selection:updated', updatePanelFromObject);
-  }
-
-  function bindPanelEvents() {
-    
-
-
-
-    elRotation.addEventListener('input', () => {
-      if (!activeImage) return;
-      const angle = parseFloat(elRotation.value);
-      activeImage.set({ angle });
-      elValRotation.textContent = `${angle}°`;
-      canvas.requestRenderAll();
-      updatePanelFromObject(true);
-    });
-
-    elScale.addEventListener('input', () => {
-      if (!activeImage) return;
-      const percent = parseFloat(elScale.value);
-      const ratio = percent / 100;
-      const baseScale = activeImage.__baseScale || 1;
-      activeImage.set({
-        scaleX: baseScale * ratio,
-        scaleY: baseScale * ratio
-      });
-      elValScale.textContent = `${percent}%`;
-      canvas.requestRenderAll();
-      updatePanelFromObject(true);
-    });
-  }
-
-  /**
-   * Registers a newly loaded image as the single active editable object.
-   * Stores its pristine transform so Reset (implemented in a later phase)
-   * can restore it exactly.
-   */
-  function setActiveImage(imgObject, baseScale) {
-    activeImage = imgObject;
-    activeImage.__baseScale = baseScale;
-
-    originalState = {
-      left: imgObject.left,
-      top: imgObject.top,
-      scaleX: imgObject.scaleX,
-      scaleY: imgObject.scaleY,
-      angle: imgObject.angle,
-      flipX: imgObject.flipX,
-      flipY: imgObject.flipY,
-      opacity: imgObject.opacity
+    const reader = new FileReader();
+    reader.onload = function(f) {
+        window.originalFile = f.target.result;
+        window.loadImage(f.target.result, true);
     };
+    reader.readAsDataURL(file);
+};
 
-    enablePanel(true);
-    updatePanelFromObject();
-  }
+// Load the image onto the Fabric canvas
+window.loadImage = function(url, isNew = false) {
+    fabric.Image.fromURL(url, function(img) {
+        if (window.activeImage && isNew) {
+            window.canvas.remove(window.activeImage);
+        }
+        
+        window.activeImage = img;
+        
+        // Scale the image so it fits nicely within 80% of the A4 canvas
+        const scale = Math.min((794 * 0.8) / img.width, (1123 * 0.8) / img.height);
+        img.set({
+            scaleX: scale,
+            scaleY: scale,
+            originX: 'center',
+            originY: 'center',
+            left: 794 / 2,
+            top: 1123 / 2,
+            cornerColor: '#2563eb',
+            cornerStrokeColor: '#ffffff',
+            transparentCorners: false,
+            borderColor: '#2563eb',
+            cornerSize: 12
+        });
 
-  function clearActiveImage() {
-    activeImage = null;
-    originalState = null;
-    enablePanel(false);
-  }
-
-  function getActiveImage() {
-    return activeImage;
-  }
-
-  function getOriginalState() {
-    return originalState;
-  }
-
-  /**
-   * Rotates the active image 90° clockwise, pivoting around its
-   * own center so it stays visually anchored on the paper.
-   */
-  function rotateBy90() {
-    if (!activeImage) return;
-    const newAngle = (((activeImage.angle || 0) + 90) % 360 + 360) % 360;
-    activeImage.rotate(newAngle);
-    activeImage.setCoords();
-    canvas.requestRenderAll();
-    canvas.fire('object:modified', { target: activeImage });
-    updatePanelFromObject();
-  }
-
-  /**
-   * Mirrors the active image across its vertical axis (left/right flip).
-   */
-  function flipHorizontal() {
-    if (!activeImage) return;
-    activeImage.set('flipX', !activeImage.flipX);
-    activeImage.setCoords();
-    canvas.requestRenderAll();
-    canvas.fire('object:modified', { target: activeImage });
-  }
-
-  /**
-   * Mirrors the active image across its horizontal axis (top/bottom flip).
-   */
-  function flipVertical() {
-    if (!activeImage) return;
-    activeImage.set('flipY', !activeImage.flipY);
-    activeImage.setCoords();
-    canvas.requestRenderAll();
-    canvas.fire('object:modified', { target: activeImage });
-  }
-
-  /**
-   * Restores the active image to its exact pristine state — the
-   * position, scale, rotation, flip and opacity it had the moment
-   * it was first loaded onto the paper. Filter adjustments (phase 4)
-   * are reset independently by filters.js when Reset is triggered.
-   */
-  function resetImage() {
-    if (!activeImage || !originalState) return;
-
-    activeImage.set({
-      left: originalState.left,
-      top: originalState.top,
-      scaleX: originalState.scaleX,
-      scaleY: originalState.scaleY,
-      angle: originalState.angle,
-      flipX: originalState.flipX,
-      flipY: originalState.flipY,
-      opacity: originalState.opacity
+        window.canvas.add(img);
+        window.canvas.setActiveObject(img);
+        window.canvas.renderAll();
+        
+        // Update UI states
+        document.getElementById('a4Placeholder').classList.add('hidden');
+        document.getElementById('statusText').textContent = "Image loaded";
+        window.enableUI();
+        window.syncUIWithObject(img);
     });
-    activeImage.setCoords();
-    canvas.requestRenderAll();
-    canvas.fire('object:modified', { target: activeImage });
-    updatePanelFromObject();
-  }
+};
 
-  function updatePanelFromObject(skipRotationScaleSync) {
-    if (!activeImage) return;
+// Reset all edits back to the original uploaded file
+window.resetEdits = function() {
+    if (!window.originalFile) return;
+    window.canvas.clear();
+    window.canvas.backgroundColor = '#ffffff';
+    window.loadImage(window.originalFile, true);
+    
+    // Reset UI Inputs
+    document.getElementById('inputBrightness').value = 0;
+    document.getElementById('inputContrast').value = 0;
+    document.getElementById('inputSaturation').value = 0;
+    document.getElementById('inputOpacity').value = 100;
+    document.getElementById('inputGrayscale').checked = false;
+    
+    window.updateFilters();
+};
 
+window.rotateImage90 = function() {
+    if (!window.activeImage) return;
+    let newAngle = (window.activeImage.angle + 90) % 360;
+    window.activeImage.set('angle', newAngle);
+    window.canvas.renderAll();
+    window.syncUIWithObject(window.activeImage);
+};
 
-
-    if (!skipRotationScaleSync) {
-      const angle = Math.round(((activeImage.angle % 360) + 360) % 360);
-      elRotation.value = angle;
-      elValRotation.textContent = `${angle}°`;
-
-      const baseScale = activeImage.__baseScale || 1;
-      const currentScale = activeImage.scaleX / baseScale;
-      const percent = Math.round(currentScale * 100);
-      elScale.value = Math.min(300, Math.max(5, percent));
-      elValScale.textContent = `${percent}%`;
+window.flipImage = function(axis) {
+    if (!window.activeImage) return;
+    if (axis === 'H') {
+        window.activeImage.set('flipX', !window.activeImage.flipX);
+    } else {
+        window.activeImage.set('flipY', !window.activeImage.flipY);
     }
-  }
-
-  function enablePanel(enabled) {
-    [elRotation, elScale].forEach(el => {
-      if (el) el.disabled = !enabled;
-      });
-  }
-
-  return {
-    init,
-    setActiveImage,
-    clearActiveImage,
-    getActiveImage,
-    getOriginalState,
-    updatePanelFromObject,
-    rotateBy90,
-    flipHorizontal,
-    flipVertical,
-    resetImage
-  };
-
-})();
+    window.canvas.renderAll();
+};
