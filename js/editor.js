@@ -18,13 +18,11 @@ App.Editor = (function () {
   let originalState = null; // stores pristine values for Reset
 
   // DOM refs (Transform panel)
-  let elWidth, elHeight, elRotation, elScale, elValRotation, elValScale;
+  let elRotation, elScale, elValRotation, elValScale;
 
   function init(fabricCanvas) {
     canvas = fabricCanvas;
 
-    elWidth = document.getElementById('inputWidth');
-    elHeight = document.getElementById('inputHeight');
     elRotation = document.getElementById('inputRotation');
     elScale = document.getElementById('inputScale');
     elValRotation = document.getElementById('valRotation');
@@ -44,25 +42,9 @@ App.Editor = (function () {
   }
 
   function bindPanelEvents() {
-    elWidth.addEventListener('input', () => {
-      if (!activeImage) return;
-      const newWidth = parseFloat(elWidth.value);
-      if (!newWidth || newWidth <= 0) return;
-      const newScaleX = newWidth / activeImage.width;
-      activeImage.set({ scaleX: newScaleX });
-      canvas.requestRenderAll();
-      updatePanelFromObject();
-    });
+    
 
-    elHeight.addEventListener('input', () => {
-      if (!activeImage) return;
-      const newHeight = parseFloat(elHeight.value);
-      if (!newHeight || newHeight <= 0) return;
-      const newScaleY = newHeight / activeImage.height;
-      activeImage.set({ scaleY: newScaleY });
-      canvas.requestRenderAll();
-      updatePanelFromObject();
-    });
+
 
     elRotation.addEventListener('input', () => {
       if (!activeImage) return;
@@ -190,10 +172,7 @@ App.Editor = (function () {
   function updatePanelFromObject(skipRotationScaleSync) {
     if (!activeImage) return;
 
-    const w = Math.round(activeImage.width * activeImage.scaleX);
-    const h = Math.round(activeImage.height * activeImage.scaleY);
-    elWidth.value = w;
-    elHeight.value = h;
+
 
     if (!skipRotationScaleSync) {
       const angle = Math.round(((activeImage.angle % 360) + 360) % 360);
@@ -209,9 +188,9 @@ App.Editor = (function () {
   }
 
   function enablePanel(enabled) {
-    [elWidth, elHeight, elRotation, elScale].forEach(el => {
-      el.disabled = !enabled;
-    });
+    [elRotation, elScale].forEach(el => {
+      if (el) el.disabled = !enabled;
+      });
   }
 
   return {
